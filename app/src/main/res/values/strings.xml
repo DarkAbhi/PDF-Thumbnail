@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PDFThumbnail</string>
+    <string name="select_pdf">Select PDF</string>
+    <string name="page_count">PAGE COUNT:</string>
+    <string name="view_pdf">View PDF</string>
+    <string name="filename">FILENAME:</string>
+    <string name="folder">FOLDER:</string>
+</resources>
