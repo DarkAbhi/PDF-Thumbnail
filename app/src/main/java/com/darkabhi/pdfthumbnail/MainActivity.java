@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Uri filePath;
 
+    private Bitmap convertedImage;
+
     private Button selectPDFButton, viewPDFButton;
 
     private TextView filenameTextView, countTextView, folderPath;
@@ -94,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG,"\nPDFURI: "+pdfUri+"\n"+"fd: "+fd+"\nPDFDocument "+pdfDocument+ "\nWidth & Height: "+width+"\t"+height);
             Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             pdfiumCore.renderPageBitmap(pdfDocument, bmp, pageNumber, 0, 0, width, height);
-            saveImage(bmp);
-            iv.setImageBitmap(bmp);
+            convertedImage = getResizedBitmap(bmp, 300);
+            iv.setImageBitmap(convertedImage);
             pdfiumCore.closeDocument(pdfDocument); // important!
         } catch (Exception e) {
             //todo with exception
@@ -129,26 +131,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void saveImage(Bitmap bmp) {
-        Log.e(TAG, String.valueOf(bmp));
-        FileOutputStream out = null;
-        try {
-            File folder = new File(FOLDER);
-            if (!folder.exists())
-                folder.mkdirs();
-            File file = new File(folder, "PDF.png");
-            out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-        } catch (Exception e) {
-            //todo with exception
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception e) {
-                //todo with exception
-            }
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
         }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     public String getFileName(Uri uri) {
